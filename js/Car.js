@@ -200,9 +200,25 @@ export class Car extends THREE.Group {
       })
     );
   }
-  update(ground) {
+
+  updateSides() {
     this.hitBox.bottom = this.position.y - this.hitBox.height / 2;
     this.hitBox.top = this.position.y + this.hitBox.height / 2;
+    this.hitBox.right = this.position.x + this.hitBox.width / 2;
+    this.hitBox.left = this.position.x - this.hitBox.width / 2;
+  }
+
+  update(ground) {
+    this.updateSides();
+
+    if (
+      this.hitBox.right + this.velocity.x <= ground.right &&
+      this.hitBox.left + this.velocity.x >= ground.left
+    ) {
+      this.position.x += this.velocity.x;
+    }
+    this.position.z += this.velocity.z;
+
     this.applyGravity(ground);
   }
 

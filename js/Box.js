@@ -22,6 +22,9 @@ export class Box extends THREE.Mesh {
     this.width = width;
     this.height = height;
     this.depth = depth;
+
+    this.right = this.position.x + this.width / 2;
+    this.left = this.position.x - this.width / 2;
     this.bottom = this.position.y - this.height / 2;
     this.top = this.position.y + this.height / 2;
   }
