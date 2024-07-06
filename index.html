@@ -1,0 +1,98 @@
+<style>
+  body {
+    margin: 0;
+  }
+</style>
+
+<script
+  async
+  src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"
+></script>
+
+<script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.150.1/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.150.1/examples/jsm/"
+    }
+  }
+</script>
+
+<script type="module">
+  import * as THREE from "three";
+  import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(
+    75,
+    window.innerWidth / window.innerHeight,
+    0.1,
+    1000
+  );
+
+  const renderer = new THREE.WebGLRenderer();
+  renderer.shadowMap.enabled = true;
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  document.body.appendChild(renderer.domElement);
+
+  const controls = new OrbitControls(camera, renderer.domElement);
+
+  const car = new THREE.Mesh(
+    new THREE.BoxGeometry(1, 0.5, 2),
+    new THREE.MeshStandardMaterial({ color: 0x00ff00 })
+  );
+  car.castShadow = true;
+
+  const backWheel = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.25, 0.25, 1.1, 32),
+    new THREE.MeshStandardMaterial({ color: 0x333333 })
+  );
+  backWheel.position.y = -0.25;
+  backWheel.position.z = 0.6;
+  backWheel.rotation.z = Math.PI / 2;
+  backWheel.castShadow = true;
+  car.add(backWheel);
+
+  const frontWheel = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.25, 0.25, 1.1, 32),
+    new THREE.MeshStandardMaterial({ color: 0x333333 })
+  );
+  frontWheel.position.y = -0.25;
+  frontWheel.position.z = -0.6;
+  frontWheel.rotation.z = Math.PI / 2;
+  frontWheel.castShadow = true;
+  car.add(frontWheel);
+
+  const cabin = new THREE.Mesh(
+    new THREE.BoxGeometry(0.9, 0.45, 1.25),
+    new THREE.MeshStandardMaterial({ color: 0xffffff })
+  );
+  cabin.position.z = 0.15;
+  cabin.position.y = 0.45;
+  cabin.castShadow = true;
+  car.add(cabin);
+
+  scene.add(car);
+
+  const ground = new THREE.Mesh(
+    new THREE.BoxGeometry(5, 0.5, 10),
+    new THREE.MeshStandardMaterial({ color: 0x0000ff })
+  );
+  ground.receiveShadow = true;
+  ground.position.y = -2;
+  scene.add(ground);
+
+  const light = new THREE.DirectionalLight(0xffffff, 1);
+  light.position.y = 3;
+  light.position.z = 2;
+  light.castShadow = true;
+  scene.add(light);
+
+  camera.position.z = 5;
+
+  function animate() {
+    requestAnimationFrame(animate);
+    renderer.render(scene, camera);
+  }
+  animate();
+</script>
