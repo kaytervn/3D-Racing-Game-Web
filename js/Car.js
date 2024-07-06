@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { Box } from "./Box.js";
+import { boxCollision } from "./utils.js";
 
 export class Car extends THREE.Group {
   constructor({
@@ -9,10 +10,14 @@ export class Car extends THREE.Group {
       z: 0,
     },
     gravity = -0.002,
+    friction = 0.5,
+    zAcceleration = false,
   }) {
     super();
     this.velocity = velocity;
     this.gravity = gravity;
+    this.friction = friction;
+    this.zAcceleration = zAcceleration;
     this.init();
   }
 
@@ -204,31 +209,44 @@ export class Car extends THREE.Group {
   updateSides() {
     this.hitBox.bottom = this.position.y - this.hitBox.height / 2;
     this.hitBox.top = this.position.y + this.hitBox.height / 2;
+
     this.hitBox.right = this.position.x + this.hitBox.width / 2;
     this.hitBox.left = this.position.x - this.hitBox.width / 2;
+
+    this.hitBox.front = this.position.z + this.hitBox.depth / 2;
+    this.hitBox.back = this.position.z - this.hitBox.depth / 2;
   }
 
   update(ground) {
     this.updateSides();
 
-    if (
-      this.hitBox.right + this.velocity.x <= ground.right &&
-      this.hitBox.left + this.velocity.x >= ground.left
-    ) {
+    if (this.zAcceleration) this.velocity.z += 0.0003;
+
+    const xCollision =
+      this.hitBox.right >= ground.left && this.hitBox.left <= ground.right;
+
+    const zCollision =
+      this.hitBox.front >= ground.back && this.hitBox.back <= ground.front;
+
+    if (xCollision && zCollision) {
       this.position.x += this.velocity.x;
+      this.position.z += this.velocity.z;
     }
-    this.position.z += this.velocity.z;
 
     this.applyGravity(ground);
   }
 
   applyGravity(ground) {
     this.velocity.y += this.gravity;
-    if (this.hitBox.bottom + this.velocity.y <= ground.top) {
-      this.velocity.y *= 0.5;
+    if (
+      boxCollision({
+        box1: this.hitBox,
+        box2: ground,
+        velocityY: this.velocity.y,
+      })
+    ) {
+      this.velocity.y *= this.friction;
       this.velocity.y = -this.velocity.y;
-    } else {
-      this.position.y += this.velocity.y;
-    }
+    } else this.position.y += this.velocity.y;
   }
 }

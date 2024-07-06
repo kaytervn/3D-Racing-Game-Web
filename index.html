@@ -28,6 +28,7 @@
     import { OrbitControls } from "three/addons/controls/OrbitControls.js";
     import { Car } from "./js/Car.js";
     import { Box } from "./js/Box.js";
+    import { boxCollision } from "./js/utils.js";
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(
@@ -106,7 +107,7 @@
           keys.w.pressed = true;
           break;
         case "Space":
-          cube.velocity.y = 0.08;
+          car.velocity.y = 0.08;
           break;
       }
     });
@@ -135,6 +136,7 @@
 
       car.velocity.x = 0;
       car.velocity.z = 0;
+
       if (keys.a.pressed) car.velocity.x = -0.05;
       else if (keys.d.pressed) car.velocity.x = 0.05;
 

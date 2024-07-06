@@ -25,7 +25,11 @@ export class Box extends THREE.Mesh {
 
     this.right = this.position.x + this.width / 2;
     this.left = this.position.x - this.width / 2;
+
     this.bottom = this.position.y - this.height / 2;
     this.top = this.position.y + this.height / 2;
+
+    this.front = this.position.z + this.depth / 2;
+    this.back = this.position.z - this.depth / 2;
   }
 }
