@@ -2,12 +2,7 @@
   <title>3D Racing Game</title>
   <link rel="icon" href="cookiedu_logo.png" type="image/x-icon" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <style>
-    body {
-      margin: 0;
-      background: #0c4a6e;
-    }
-  </style>
+  <link rel="stylesheet" href="./styles/style.css" />
 
   <script
     async
@@ -24,12 +19,23 @@
   </script>
 </head>
 <body>
+  <div id="score">0</div>
+  <div id="results">
+    <div class="content">
+      <h1>You hit another vehicle</h1>
+      <p>Press F5 to reset the game</p>
+    </div>
+  </div>
   <script type="module">
     import * as THREE from "three";
     import { OrbitControls } from "three/addons/controls/OrbitControls.js";
     import { Car } from "./js/Car.js";
+    import { Truck } from "./js/Truck.js";
     import { Box } from "./js/Box.js";
     import { boxCollision } from "./js/utils.js";
+
+    const scoreElement = document.getElementById("score");
+    const resultsElement = document.getElementById("results");
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(
@@ -159,6 +165,16 @@
     let spawnRate = 300;
     let speedMultiplier = 1;
 
+    const colorPairs = [
+      { main: "#A93226", sub: "#F1948A" },
+      { main: "#884EA0", sub: "#BB8FCE" },
+      { main: "#2471A3", sub: "#85C1E9" },
+      { main: "#229954", sub: "#82E0AA" },
+      { main: "#D68910", sub: "#F7DC6F" },
+      { main: "#BA4A00", sub: "#F0B27A" },
+      { main: "#273746", sub: "#85929E" },
+    ];
+
     for (let i = -20; i <= 20; i += 5) {
       const dashLine1 = new Box({
         width: 0.25,
@@ -205,12 +221,22 @@
     function animate() {
       const animationId = requestAnimationFrame(animate);
       renderer.render(scene, camera);
+
+      scoreElement.innerText = `Score ${parseInt(frames * speedMultiplier)}`;
+
       car.update(ground);
+
+      if (car.position.y < -10) {
+        resultsElement.querySelector(".content h1").innerText =
+          "You're falling into hell";
+        resultsElement.style.display = "flex";
+        cancelAnimationFrame(animationId);
+      }
 
       car.velocity.x = 0;
       car.velocity.z = 0;
 
-      if (speedMultiplier < 3) speedMultiplier = 1 + frames / 10000;
+      if (speedMultiplier < 3) speedMultiplier = 1 + frames / 30000;
 
       if (keys.a.pressed) car.velocity.x = -0.05 * speedMultiplier;
       else if (keys.d.pressed) car.velocity.x = 0.05 * speedMultiplier;
@@ -227,41 +253,62 @@
             velocityY: car.velocity.y,
           })
         ) {
+          resultsElement.style.display = "flex";
           cancelAnimationFrame(animationId);
         }
       });
 
       dashLines.forEach((dashLine) => {
-        dashLine.update(ground);
+        dashLine.update();
       });
 
       if (frames % spawnRate === 0) {
         if (spawnRate > 40) spawnRate -= 20;
 
-        const enemy = new Car({
-          velocity: {
-            x: 0,
-            y: -0.05 * speedMultiplier,
-            z: 0.005,
-          },
-          position: {
-            x: (Math.random() - 0.5) * 10,
-            y: 0,
-            z: -20,
-          },
-          zAcceleration: true,
-          flipped: -1,
-          color: {
-            main: "red",
-            sub: "#ff5757",
-          },
-        });
+        const isTruck = Math.random() < 0.25;
+        const enemy = isTruck
+          ? new Truck({
+              velocity: {
+                x: 0,
+                y: -0.05 * speedMultiplier,
+                z: 0.005,
+              },
+              position: {
+                x: (Math.random() - 0.5) * 10,
+                y: 0,
+                z: -20,
+              },
+              zAcceleration: true,
+              flipped: -1,
+              color: colorPairs[Math.floor(Math.random() * colorPairs.length)],
+            })
+          : new Car({
+              velocity: {
+                x: 0,
+                y: -0.05 * speedMultiplier,
+                z: 0.005,
+              },
+              position: {
+                x: (Math.random() - 0.5) * 10,
+                y: 0,
+                z: -20,
+              },
+              zAcceleration: true,
+              flipped: -1,
+              color: colorPairs[Math.floor(Math.random() * colorPairs.length)],
+            });
+
         scene.add(enemy);
         enemies.push(enemy);
       }
-
       frames++;
     }
+
     animate();
+
+    scoreElement.style.cssText = `
+      left: 100;
+      top: 75;
+    `;
   </script>
 </body>

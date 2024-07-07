@@ -39,7 +39,7 @@ export class Box extends THREE.Mesh {
     this.back = this.position.z - this.depth / 2;
   }
 
-  update(ground) {
+  update() {
     if (this.velocity.z < 1) this.velocity.z += 0.00001;
     this.position.z += this.velocity.z;
     if (this.position.z >= 20) {
