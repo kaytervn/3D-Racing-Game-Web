@@ -156,7 +156,7 @@
     const dashLines = [];
 
     let frames = 0;
-    let spawnRate = 200;
+    let spawnRate = 300;
     let speedMultiplier = 1;
 
     for (let i = -20; i <= 20; i += 5) {
@@ -236,12 +236,12 @@
       });
 
       if (frames % spawnRate === 0) {
-        if (spawnRate > 20) spawnRate -= 20;
+        if (spawnRate > 100) spawnRate -= 20;
 
         const enemy = new Car({
           velocity: {
             x: 0,
-            y: -0.01,
+            y: -0.01 * speedMultiplier,
             z: 0.005,
           },
           position: {
