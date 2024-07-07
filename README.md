@@ -1,6 +1,6 @@
 <h2>3D Racing Game</h2>
 
-**Live Demo:** https://ktr-kings-and-pigs.netlify.app/
+**Live Demo:** https://kaytervn.github.io/3D-Racing-Game-Web/
 
 **Player Control:**
 
