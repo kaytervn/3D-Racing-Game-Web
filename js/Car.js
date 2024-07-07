@@ -12,12 +12,25 @@ export class Car extends THREE.Group {
     gravity = -0.002,
     friction = 0.5,
     zAcceleration = false,
+    flipped = 1,
+    position = {
+      x: 0,
+      y: 0,
+      z: 0,
+    },
+    color = {
+      main: "#00ff00",
+      sub: "#90EE90",
+    },
   }) {
     super();
+    this.position.set(position.x, position.y, position.z);
     this.velocity = velocity;
     this.gravity = gravity;
     this.friction = friction;
     this.zAcceleration = zAcceleration;
+    this.flipped = flipped;
+    this.color = color;
     this.init();
   }
 
@@ -40,7 +53,7 @@ export class Car extends THREE.Group {
         width: 1,
         height: 0.3,
         depth: 2,
-        color: "#90EE90",
+        color: this.color.sub,
         position: {
           x: 0,
           y: 0,
@@ -58,7 +71,7 @@ export class Car extends THREE.Group {
         position: {
           x: 0,
           y: 0.3,
-          z: 0.1,
+          z: 0.1 * this.flipped,
         },
       })
     );
@@ -72,7 +85,7 @@ export class Car extends THREE.Group {
         position: {
           x: 0,
           y: 0.3,
-          z: 0.1,
+          z: 0.1 * this.flipped,
         },
       })
     );
@@ -86,7 +99,7 @@ export class Car extends THREE.Group {
         position: {
           x: 0,
           y: 0.3,
-          z: -0.03,
+          z: -0.03 * this.flipped,
         },
       })
     );
@@ -100,7 +113,7 @@ export class Car extends THREE.Group {
         position: {
           x: 0,
           y: 0.3,
-          z: 0.475,
+          z: 0.475 * this.flipped,
         },
       })
     );
@@ -110,11 +123,11 @@ export class Car extends THREE.Group {
         width: 1.15,
         height: 0.1,
         depth: 0.25,
-        color: "#00ff00",
+        color: this.color.main,
         position: {
           x: 0,
           y: 0.075,
-          z: -0.2,
+          z: -0.2 * this.flipped,
         },
       })
     );
@@ -124,7 +137,7 @@ export class Car extends THREE.Group {
         width: 0.845,
         height: 0.35,
         depth: 2.1,
-        color: "#00ff00",
+        color: this.color.main,
         position: {
           x: 0,
           y: 0,
@@ -157,7 +170,7 @@ export class Car extends THREE.Group {
         position: {
           x: 0,
           y: -0.2,
-          z: 0.6,
+          z: 0.6 * this.flipped,
         },
       })
     );
@@ -171,7 +184,7 @@ export class Car extends THREE.Group {
         position: {
           x: 0,
           y: -0.2,
-          z: 0.6,
+          z: 0.6 * this.flipped,
         },
       })
     );
@@ -186,7 +199,7 @@ export class Car extends THREE.Group {
         position: {
           x: 0,
           y: -0.2,
-          z: -0.6,
+          z: -0.6 * this.flipped,
         },
       })
     );
@@ -200,7 +213,7 @@ export class Car extends THREE.Group {
         position: {
           x: 0,
           y: -0.2,
-          z: -0.6,
+          z: -0.6 * this.flipped,
         },
       })
     );
@@ -222,13 +235,7 @@ export class Car extends THREE.Group {
 
     if (this.zAcceleration) this.velocity.z += 0.0003;
 
-    const xCollision =
-      this.hitBox.right >= ground.left && this.hitBox.left <= ground.right;
-
-    const zCollision =
-      this.hitBox.front >= ground.back && this.hitBox.back <= ground.front;
-
-    if (xCollision && zCollision) {
+    if (this.hitBox.bottom >= ground.top) {
       this.position.x += this.velocity.x;
       this.position.z += this.velocity.z;
     }
