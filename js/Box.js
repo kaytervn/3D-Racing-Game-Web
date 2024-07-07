@@ -11,6 +11,11 @@ export class Box extends THREE.Mesh {
       y: 0,
       z: 0,
     },
+    velocity = {
+      x: 0,
+      y: 0,
+      z: 0,
+    },
   }) {
     super(
       new THREE.BoxGeometry(width, height, depth),
@@ -18,6 +23,7 @@ export class Box extends THREE.Mesh {
     );
     this.position.set(position.x, position.y, position.z);
     this.castShadow = true;
+    this.velocity = velocity;
 
     this.width = width;
     this.height = height;
@@ -31,5 +37,13 @@ export class Box extends THREE.Mesh {
 
     this.front = this.position.z + this.depth / 2;
     this.back = this.position.z - this.depth / 2;
+  }
+
+  update(ground) {
+    if (this.velocity.z < 1) this.velocity.z += 0.00001;
+    this.position.z += this.velocity.z;
+    if (this.position.z >= 20) {
+      this.position.z = -20;
+    }
   }
 }

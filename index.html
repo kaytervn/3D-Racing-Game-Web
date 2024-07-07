@@ -153,9 +153,54 @@
     });
 
     const enemies = [];
+    const dashLines = [];
 
     let frames = 0;
     let spawnRate = 200;
+    let speedMultiplier = 1;
+
+    for (let i = -20; i <= 20; i += 5) {
+      const dashLine1 = new Box({
+        width: 0.25,
+        height: 0.5,
+        depth: 1.5,
+        color: "yellow",
+        position: {
+          x: 2.5,
+          y: -1.99,
+          z: i,
+        },
+        velocity: {
+          x: 0,
+          y: 0,
+          z: 0.1,
+        },
+      });
+      dashLine1.receiveShadow = true;
+      scene.add(dashLine1);
+
+      const dashLine2 = new Box({
+        width: 0.25,
+        height: 0.5,
+        depth: 1.5,
+        color: "yellow",
+        position: {
+          x: -2.5,
+          y: -1.99,
+          z: i,
+        },
+        velocity: {
+          x: 0,
+          y: 0,
+          z: 0.1,
+        },
+      });
+      dashLine2.receiveShadow = true;
+      scene.add(dashLine2);
+
+      dashLines.push(dashLine1);
+      dashLines.push(dashLine2);
+    }
 
     function animate() {
       const animationId = requestAnimationFrame(animate);
@@ -165,11 +210,13 @@
       car.velocity.x = 0;
       car.velocity.z = 0;
 
-      if (keys.a.pressed) car.velocity.x = -0.05;
-      else if (keys.d.pressed) car.velocity.x = 0.05;
+      if (speedMultiplier < 3) speedMultiplier = 1 + frames / 10000;
 
-      if (keys.s.pressed) car.velocity.z = 0.05;
-      else if (keys.w.pressed) car.velocity.z = -0.05;
+      if (keys.a.pressed) car.velocity.x = -0.05 * speedMultiplier;
+      else if (keys.d.pressed) car.velocity.x = 0.05 * speedMultiplier;
+
+      if (keys.s.pressed) car.velocity.z = 0.05 * speedMultiplier;
+      else if (keys.w.pressed) car.velocity.z = -0.05 * speedMultiplier;
 
       enemies.forEach((enemy) => {
         enemy.update(ground);
@@ -182,6 +229,10 @@
         ) {
           cancelAnimationFrame(animationId);
         }
+      });
+
+      dashLines.forEach((dashLine) => {
+        dashLine.update(ground);
       });
 
       if (frames % spawnRate === 0) {
