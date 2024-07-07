@@ -236,12 +236,12 @@
       });
 
       if (frames % spawnRate === 0) {
-        if (spawnRate > 100) spawnRate -= 20;
+        if (spawnRate > 40) spawnRate -= 20;
 
         const enemy = new Car({
           velocity: {
             x: 0,
-            y: -0.01 * speedMultiplier,
+            y: -0.05 * speedMultiplier,
             z: 0.005,
           },
           position: {
